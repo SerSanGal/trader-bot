@@ -1,0 +1,8 @@
+name: trader-bot
+channels:
+  - defaults
+dependencies:
+  - pip=21.0.1
+  - python=3.8.5
+  - pip:
+    - python-binance==0.7.9
