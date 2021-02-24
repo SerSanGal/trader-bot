@@ -20,7 +20,7 @@ def get_sweet_spot_to_buy(candle: list) -> dict:
         "stop_limit_price": price_format(stop_limit_price)
     }
 
-def get_sell_range(buy_price, current_price):
+def get_sell_range(buy_price: str, current_price: str) -> dict:
     price = buy_price * (1 + bot_config.profit)
     stop_limit_price = buy_price * (1 - bot_config.tolerable_loss)
     return {
