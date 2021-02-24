@@ -1,7 +1,12 @@
 import pytest
 
-from calculations import get_sweet_spot_to_buy, price_format
+from calculations import price_format, get_sweet_spot_to_buy, get_sell_range
 
+def test_price_format():
+    price = 1
+    expected_output = "1.00000000"
+    actual_output = price_format(price)
+    assert actual_output == expected_output
 
 def test_get_sweet_spot_to_buy():
     event = [
@@ -28,8 +33,13 @@ def test_get_sweet_spot_to_buy():
     assert actual_output == expected_output
 
 
-def test_price_format():
-    event = 1
-    expected_output = "1.00000000"
-    actual_output = price_format(event)
+def test_get_sell_range():
+    buy_price = 1
+    current_price = 1.01
+    expected_output = {
+        "price": "1.02000000",
+        "stop_price": "1.01000000",
+        "stop_limit_price": "0.99000000"
+    }
+    actual_output = get_sell_range(buy_price, current_price)
     assert actual_output == expected_output
