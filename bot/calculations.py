@@ -3,13 +3,13 @@ from decimal import Decimal
 import bot_config
 
 def get_sweet_spot_to_buy(candle: list) -> dict:
-    open_time = candle[0] # in milliseconds
-    open_price = Decimal(candle[1]) 
-    high_price = Decimal(candle[2]) 
-    low_price = Decimal(candle[3]) 
+    # open_time = candle[0] # in milliseconds
+    # open_price = Decimal(candle[1]) 
+    # high_price = Decimal(candle[2]) 
+    # low_price = Decimal(candle[3]) 
     close_price = Decimal(candle[4]) 
-    close_time = candle[6] # in milliseconds
-    high_price = Decimal(candle[1]) 
+    # close_time = candle[6] # in milliseconds
+    # high_price = Decimal(candle[1]) 
 
     price = close_price * ( 1 - bot_config.profit )
     stop_limit_price = close_price * (1 + bot_config.tolerable_loss)
