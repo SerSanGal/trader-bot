@@ -19,9 +19,9 @@ def test_get_sweet_spot_to_buy():
     "17928899.62484339" # Ignore.
     ]
     expected_output = {
-        "price": "0.13405350",
+        "price": "0.15455580",
         "stop_price": "0.15771000",
-        "stop_limit_price": "0.18136650"
+        "stop_limit_price": "0.15928710"
     }
 
     actual_output = get_sweet_spot_to_buy(event)

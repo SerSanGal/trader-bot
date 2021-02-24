@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+import bot_config
 
 def get_sweet_spot_to_buy(candle: list) -> dict:
     open_time = candle[0] # in milliseconds
@@ -10,8 +11,8 @@ def get_sweet_spot_to_buy(candle: list) -> dict:
     close_time = candle[6] # in milliseconds
     high_price = Decimal(candle[1]) 
 
-    price = close_price * Decimal(0.85)
-    stop_limit_price = close_price * Decimal(1.15)
+    price = close_price * ( 1 - bot_config.profit )
+    stop_limit_price = close_price * (1 + bot_config.tolerable_loss)
 
     return {
         "price": price_format(price),
