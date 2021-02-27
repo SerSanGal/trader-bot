@@ -11,7 +11,7 @@ def trading(symbol: str, quantity: str):
 
 
     sell_configuration = get_sell_configuration(buy_oco_result)
-    sell_oco_order = oco_order(symbol, "sell", sell_configuration, quantity)
+    sell_oco_order = oco_order(symbol, "sell", sell_configuration, symbol_bought_quantity)
     sell_oco_order_time = datetime.now()
 
     oco_order_control(sell_oco_order, sell_oco_order_time):
