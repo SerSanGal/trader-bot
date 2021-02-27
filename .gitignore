@@ -130,3 +130,7 @@ dmypy.json
 
 # vscode configuration
 .vscode
+
+
+# binance configuration
+binance_config.py
