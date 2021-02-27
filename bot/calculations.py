@@ -22,6 +22,9 @@ def get_sweet_spot_to_buy(candle: list) -> dict:
 
 def get_sell_range(buy_price: str, current_price: str) -> dict:
     price = buy_price * (1 + bot_config.profit)
+    if current_price > price:
+        price = current_price
+        
     stop_limit_price = buy_price * (1 - bot_config.tolerable_loss)
     return {
         "price": price_format(price),
