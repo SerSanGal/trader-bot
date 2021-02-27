@@ -25,7 +25,7 @@ def trading(symbol: str, quantity: str):
 
 def oco_order_control(oco_order: dict, oco_order_time: int) -> dict:
     while:
-    now = datetime.now()
+        now = datetime.now()
         order_status = check_oco_status(oco_order)
         if order_status != "EXECUTING":
             order = get_order_from_order_list_id(oco_order["orderListId"])
@@ -54,7 +54,7 @@ def get_order_from_order_list_id(order_list_id: int) -> dict:
 
 
 def get_buy_configuration(symbol: str) -> dict:
-    candle = get_candle(symbol, "15", 2)
+    candle = get_candle(symbol, "1m", 2)
     return get_sweet_spot_to_buy(candle)
 
 
@@ -75,7 +75,7 @@ def get_current_price(order['symbol'])
 
 
 
-def get_candle(symbol, "15", 2)
+def get_candle(symbol: str, interval: str, number_of_intervals: int) -> list
     return
 
 def is_symbol_good_to_trading(symbol: str) -> bool:
