@@ -39,6 +39,8 @@ def oco_order_control(oco_order: dict, oco_order_time: int) -> dict:
 
 
 def cancel_oco_order(oco_order: dict):
+    # if oco_order is a buyer order, just cancel the order
+    # if oco_order is a seller order, sell to the market price
     # TODO: call api endpoint
 
 
