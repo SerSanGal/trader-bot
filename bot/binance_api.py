@@ -2,7 +2,7 @@ import time
 import hashlib
 import requests
 import hmac
-import config
+import binance_config
 
 try:
     from urllib import urlencode
@@ -52,7 +52,7 @@ class BinanceAPI:
         path = "%s/ticker/24hr" % self.BASE_URL
         params = {"symbol": market}
         return self._get_no_sign(path, params)
-
+    
 
     def get_exchange_info(self):
         path = "%s/exchangeInfo" % self.BASE_URL
@@ -137,7 +137,7 @@ class BinanceAPI:
         return data
 
     def _get(self, path, params={}):
-        params.update({"recvWindow": config.recv_window})
+        params.update({"recvWindow": binance_config.recv_window})
         query = urlencode(self._sign(params))
         url = "%s?%s" % (path, query)
         header = {"X-MBX-APIKEY": self.key}
@@ -145,7 +145,7 @@ class BinanceAPI:
             timeout=30, verify=True).json()
 
     def _post(self, path, params={}):
-        params.update({"recvWindow": config.recv_window})
+        params.update({"recvWindow": binance_config.recv_window})
         query = urlencode(self._sign(params))
         url = "%s" % (path)
         header = {"X-MBX-APIKEY": self.key}
@@ -169,7 +169,7 @@ class BinanceAPI:
         return params
            
     def _delete(self, path, params={}):
-        params.update({"recvWindow": config.recv_window})
+        params.update({"recvWindow": binance_config.recv_window})
         query = urlencode(self._sign(params))
         url = "%s?%s" % (path, query)
         header = {"X-MBX-APIKEY": self.key}
