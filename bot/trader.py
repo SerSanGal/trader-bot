@@ -24,8 +24,8 @@ def trading(symbol: str, quantity: str):
 
 
 def oco_order_control(oco_order: dict, oco_order_time: int) -> dict:
-    now = datetime.now()
     while:
+    now = datetime.now()
         order_status = check_oco_status(oco_order)
         if order_status != "EXECUTING":
             order = get_order_from_order_list_id(oco_order["orderListId"])
