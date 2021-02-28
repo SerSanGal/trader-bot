@@ -21,8 +21,8 @@ class BinanceAPI:
         self.key = key
         self.secret = secret
 
-    def get_symbol_statistics_24hr(self):
-        path = "%s/ticker/24hr" % self.BASE_URL_V3
+    def get_symbol_price(self, symbol):
+        path = "%s/ticker/price" % self.BASE_URL_V3
         return self._get_no_sign(path)
 
     def get_balance(self):
