@@ -94,6 +94,16 @@ class BinanceAPI:
         params = {"symbol": market, "limit": limit}
         return self._get(path, params)
 
+    def buy_oco(self, market, quantity, rate):
+        path = "%s/order/oco" % self.BASE_URL_V3
+        params = self._order_oco(market, quantity, "BUY", rate)
+        return self._post(path, params)
+    
+    def sell_oco(self, market, quantity, rate):
+        path = "%s/order/oco" % self.BASE_URL_V3
+        params = self._order_oco(market, quantity, "SELL", rate)
+        return self._post(path, params)
+
     def buy_limit(self, market, quantity, rate):
         path = "%s/order" % self.BASE_URL_V3
         params = self._order(market, quantity, "BUY", rate)
@@ -171,6 +181,18 @@ class BinanceAPI:
         params["side"] = side
         params["quantity"] = '%.8f' % quantity
         
+        return params
+           
+    
+    def _order_oco(self, market, quantity, side, rate):
+        params = {}
+        params["symbol"] = market
+        params["side"] = side
+        params["quantity"] = '%.8f' % quantity
+        params["price"] = rate["price"]
+        params["stopPrice"] = rate["stop_price"]
+        params["stopLimitPrice"] = rate["stop_limit_price"]
+        params["stopLimitTimeInForce"] = "GTC"
         return params
            
     def _delete(self, path, params={}):
