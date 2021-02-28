@@ -134,6 +134,11 @@ class BinanceAPI:
         params = {"symbol": market, "orderId": order_id}
         return self._delete(path, params)
 
+    def query_oco_order(self, order_list_id):
+        path = "%s/orderList" % self.BASE_URL_V3
+        params = {"orderListId": order_list_id}
+        return self._get(path, params)
+
     def _get_no_sign(self, path, params={}):
         query = urlencode(params)
         url = "%s?%s" % (path, query)
