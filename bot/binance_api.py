@@ -47,7 +47,7 @@ class BinanceAPI:
         path = "%s/klines" % self.BASE_URL_V3
         params = {"symbol": market, "interval":interval, "startTime":startTime, "endTime":endTime}
         return self._get_no_sign(path, params)
-        
+
     def get_klines_by_limit(self, market, interval, limit):
         path = "%s/klines" % self.BASE_URL_V3
         params = {"symbol": market, "interval":interval, "limit":limit}
@@ -57,12 +57,6 @@ class BinanceAPI:
         path = "%s/ticker/24hr" % self.BASE_URL
         params = {"symbol": market}
         return self._get_no_sign(path, params)
-    
-
-    def get_exchange_info(self):
-        path = "%s/exchangeInfo" % self.BASE_URL
-        return self._get_no_sign(path)
-
 
     def get_order_books(self, market, limit=50):
         path = "%s/depth" % self.BASE_URL
@@ -93,7 +87,7 @@ class BinanceAPI:
         path = "%s/myTrades" % self.BASE_URL_V3
         params = {"symbol": market, "limit": limit}
         return self._get(path, params)
-
+    
     def buy_oco(self, market, quantity, rate):
         path = "%s/order/oco" % self.BASE_URL_V3
         params = self._order_oco(market, quantity, "BUY", rate)
@@ -187,7 +181,7 @@ class BinanceAPI:
         params["quantity"] = '%.8f' % quantity
         
         return params
-           
+
     
     def _order_oco(self, market, quantity, side, rate):
         params = {}
