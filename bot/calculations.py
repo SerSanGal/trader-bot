@@ -34,3 +34,25 @@ def get_sweet_spot_to_sell(purchase_price: str, current_price: str) -> dict:
 
 def price_format(price: Decimal) -> str:
     return '{0:.8f}'.format(price)
+
+
+
+def is_bettable_symbol(candle: list) -> bool:
+    open_price = Decimal(candle[1])
+    high_price = Decimal(candle[2])
+    low_price = Decimal(candle[3])
+    close_price = Decimal(candle[4]) 
+    
+    change_is_negative = open_price > close_price
+    if change_is_negative:
+        return False
+    
+    change = close_price/open_price
+    amplitude = high_price/low_price
+    #return amplitude
+    
+    if amplitude >= 1.03:
+        return True
+    else:
+        return False
+    
