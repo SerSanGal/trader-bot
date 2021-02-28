@@ -38,11 +38,13 @@ def test_get_sweet_spot_to_buy():
         "stop_price": "1.01000000",
         "stop_limit_price": "0.99000000"
     }),(1, 1.03, {
-        "price": "1.03000000",
+        "price": "1.03103000",
         "stop_price": "1.03000000",
         "stop_limit_price": "0.99000000"
     })])
-def test_get_sell_range(buy_price, current_price, expected_output):
+def test_get_sweet_spot_to_sell(buy_price, current_price, expected_output):
+    actual_output = get_sweet_spot_to_sell(buy_price, current_price)
+    assert actual_output == expected_output
 
     actual_output = get_sell_range(buy_price, current_price)
     assert actual_output == expected_output
