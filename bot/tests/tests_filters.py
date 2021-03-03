@@ -1,6 +1,6 @@
 import pytest
 
-from filters import filter_symbols_by_buy_coin, symbol_match
+from filters import filter_symbols_by_buy_coin, symbol_match, discard_special_coins
 
 
 @pytest.mark.parametrize("symbol,coin,expected_output", [("ETHBTC", "BTC", True),("SUBBTC", "USDT", False),("SUBUSDT", "USDT", True)])
@@ -10,7 +10,13 @@ def test_symbol_match(symbol,coin,expected_output):
 
 
 def test_filter_symbols_by_buy_coin():
-    event = ["SUBBTC", "SUBBUSD", "SUBUSDT", "SUBUSDC", "BTCUSDT", "USDTBTC"]
+    event = ["SUBBTC", "SUBBUSD", "SUBUSDT", "SUBUSDC", "BTCUSDT", "BTCUPUSDT", "USDTBTC"]
     expected_output = ["SUBUSDT", "BTCUSDT"]
     actual_output = filter_symbols_by_buy_coin(event, "USDT")
+    assert actual_output == expected_output
+
+
+@pytest.mark.parametrize("coin,expected_output", [("BTCUSDT", False),("BTCUPUSDT", True)])
+def test_discard_special_coins(coin, expected_output):
+    actual_output = discard_special_coins(coin)
     assert actual_output == expected_output
