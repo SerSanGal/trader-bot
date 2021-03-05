@@ -1,17 +1,31 @@
 from datetime import datetime
+import time
+
 from calculations import (
     get_sweet_spot_to_buy,
     get_sweet_spot_to_sell,
     is_bettable_symbol,
 )
 from binance_api import BinanceAPI
+import binance_config
+
 import bot_config
-import time
 
 
-def trading(client: BinanceAPI, symbol: str, bet: str, candle: list):
-    global b_client
-    b_client = client
+b_client = BinanceAPI(binance_config.api_key, binance_config.api_secret)
+def start_trading(symbol: str):
+
+    while True:
+        candles = b_client.get_klines_by_limit(symbol, "1m", 5)
+        is_candidate = is_bettable_symbol(candles)
+        if is_candidate:
+            print(datetime.now(),symbol)
+            # trading(symbol,bet)
+        time.sleep(30)
+    
+
+
+def trading(symbol: str, bet: str):
     sweet_spot_to_buy = get_sweet_spot_to_buy(candle[0])
     # TODO: calculcate quantity from bet and the stop limit price
     quantity_to_buy = bet / sweet_spot_to_buy["stop_limit_price"]
@@ -30,14 +44,7 @@ def trading(client: BinanceAPI, symbol: str, bet: str, candle: list):
     sell_oco_result = oco_order_control(sell_oco_order, sell_oco_order_time)
     if sell_oco_result == "CANCELLED" or sell_oco_result == "REJECT":
         return
-
-    candles = b_client.get_klines_by_limit(symbol, "15m", 1)
-    is_candidate = is_bettable_symbol(candles[0])
-    if is_candidate:
-        bet = get_bet()
-        trading(b_client, symbol, bet, candles[0])
-    else:
-        return
+    return
 
 
 def oco_order_control(oco_order: dict, oco_order_time: int) -> dict:
