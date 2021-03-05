@@ -12,7 +12,7 @@ def symbol_match(symbol: str, coin: str) -> bool:
 
 
 def discard_special_coins(coin: str) -> bool:
-    special_coins = ["UP", "DOWN"]
+    special_coins = ["UP", "DOWN", "BCHSV", "STORM", "BCC"]
     if any(
         special_coin for special_coin in special_coins if coin.find(special_coin) != -1
     ):
