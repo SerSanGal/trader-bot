@@ -37,8 +37,26 @@ def price_format(price: Decimal) -> str:
     return '{0:.8f}'.format(price)
 
 
+def candle_quality(candle: list, threshold) -> bool:
+    """
+        Decide if a candle is good enough.
 
-def is_bettable_symbol(candle: list) -> bool:
+        The function wait a candle. It compare the open and close points
+        to determine if this candle is good.
+
+        the change in % is compared to a % threshold.
+        
+        Parameters
+        ----------
+        candle : a candle, mandatory
+            symbol candle.
+
+        Return
+        ------
+        is_candle_good : bool
+            True: is a good candle
+            False: is not a good candle
+    """
     open_price = Decimal(candle[1])
     high_price = Decimal(candle[2])
     low_price = Decimal(candle[3])
@@ -48,11 +66,60 @@ def is_bettable_symbol(candle: list) -> bool:
     if change_is_negative:
         return False
     
-    change = close_price/open_price
+    #change = close_price / open_price
     amplitude = high_price/low_price
-    #return amplitude
+
+    is_candle_good = amplitude >= threshold
+
+    if is_candle_good:
+        return True
+    else:
+        return False
+
+
+def is_bettable_symbol(candles: list) -> bool:
+    """
+        Decide if a symbol is a good candidate from a list of candles.
+
+        The function wait a list of 15 or more candles of 
+        1m limit time. 
+
+        First it check if the whole candles are positive. If then candle
+        is negative, it will return the symbol is not a good candidate.
+
+        If the whole candles are positive it will check if the whole candle
+        increment is big enough. 
+        
+        If incremente is big enough it will check the increment of the last 
+        2 minutes, i.e. the last to candles. 
+        
+        Parameters
+        ----------
+        candles : candle list, mandatory
+            symbol candles. The function wait a list of 15 or more candles of 
+            1m limit time.
+
+        Return
+        ------
+        bettable_symbol : bool
+            True: is a good candidate to bet
+            False: is not good enough to bet
+    """
+    whole_candles = join_candles(candles)
+    is_whole_candles_good = candle_quality(
+        whole_candles, 1.03
+    )  # see global candel state
+    if not is_whole_candles_good:
+        return False
+
+    last_candles = join_candles(candles[len(candles) - 2 :])
+    is_last_candles_good = candle_quality(last_candles, 1.0175)  # see global candel state
+    if not is_last_candles_good:
+        return False
     
-    if amplitude >= 1.03:
+    is_last_candle_good = candle_quality(candles[len(candles) - 1], 1) 
+    
+    if is_last_candle_good:
         return True
     else:
         return False
