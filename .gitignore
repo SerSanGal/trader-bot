@@ -134,3 +134,6 @@ dmypy.json
 
 # binance configuration
 binance_config.py
+
+# data
+bot/data/*
