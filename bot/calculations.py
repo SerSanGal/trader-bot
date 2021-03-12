@@ -1,42 +1,90 @@
 from decimal import Decimal
 
 import bot_config
+import binance_config
 
 
-def get_sweet_spot_to_buy(candle: list) -> dict:
-    # open_time = candle[0] # in milliseconds
-    # open_price = Decimal(candle[1])
-    # high_price = Decimal(candle[2])
-    # low_price = Decimal(candle[3])
-    close_price = Decimal(candle[4])
-    # close_time = candle[6] # in milliseconds
-    # high_price = Decimal(candle[1])
+def get_sweet_spot_to_sell(
+    symbol_info: dict,
+    executed_qty: Decimal,
+    current_price: Decimal,
+    cummulative_quote_qty: Decimal,
+) -> dict:
 
-    price = close_price * bot_config.buy_tolerance_top
-    stop_limit_price = close_price * bot_config.buy_tolerance_bottom
+    tick_size = symbol_tick_size(symbol_info["filters"])
+
+    bet = cummulative_quote_qty
+
+
+    price = bet * (1 + bot_config.profit) * (1 + binance_config.fee) / executed_qty
+
+    if current_price >= price:
+        price = current_price * (1 + Decimal(tick_size))
+        stop_limit_price = current_price * (1 - Decimal(tick_size))
+    else: 
+        stop_limit_price = (
+            bet * (1 - bot_config.tolerable_loss) * (1 + binance_config.fee) / executed_qty
+        )
+
+    if stop_limit_price >= current_price:
+        stop_limit_price = current_price * (1 - Decimal(tick_size))
+
+    stop_price = stop_limit_price
 
     return {
-        "price": price_format(price),
-        "stop_price": price_format(close_price),
-        "stop_limit_price": price_format(stop_limit_price),
+        "current_price": current_price,
+        "price": price_format(price, tick_size),
+        "stop_price": price_format(stop_price, tick_size),
+        "stop_limit_price": price_format(stop_limit_price, tick_size),
     }
 
 
-def get_sweet_spot_to_sell(purchase_price: str, current_price: str) -> dict:
-    price = Decimal(purchase_price) * (1 + bot_config.profit)
-    if Decimal(current_price) > price:
-        price = Decimal(current_price) * Decimal(1.001)
+def is_correct_lot_size(filters: list, quantity: Decimal) -> int:
+    """
+        Decide if the quantity is fit with the lot size 
+        filter of the symbol.
+        
+        Parameters
+        ----------
+        filters : list of symbol filters, mandatory
 
-    stop_limit_price = Decimal(purchase_price) * (1 - bot_config.tolerable_loss)
-    return {
-        "price": price_format(price),
-        "stop_price": price_format(Decimal(current_price)),
-        "stop_limit_price": price_format(stop_limit_price),
-    }
+        Return
+        ------
+        correct quantity : int
+            0 : the quantity is correct
+            1 : the quantity is too high
+           -1 : the quantity is too low 
+            None : LOT_SIZE filter does not found in filters
+    """
+    for filter in filters:
+        if filter["filterType"] == "LOT_SIZE":
+            if Decimal(filter["minQty"]) > quantity:
+                return -1
+            elif Decimal(filter["maxQty"]) < quantity:
+                return 1
+            else:
+                return 0
+    return
 
 
-def price_format(price: Decimal) -> str:
-    return "{0:.8f}".format(price)
+def symbol_tick_size(filters: list) -> str:
+    for filter in filters:
+        if filter["filterType"] == "PRICE_FILTER":
+            return filter["tickSize"]
+
+
+def symbol_quantity_step_size(filters: list) -> int:
+    for filter in filters:
+        if filter["filterType"] == "LOT_SIZE":
+            return filter["stepSize"].find("1") - 1
+
+
+def price_format(price: Decimal, tick_size: int) -> str:
+    return "{:.{prec}f}".format(price, prec=tick_size.find("1") - 1)
+
+
+def quantity_format(quantity: Decimal, step_size: int) -> Decimal:
+    return Decimal("{:.{prec}f}".format(quantity, prec=step_size))
 
 
 def candle_quality(candle: list, threshold) -> bool:
@@ -64,14 +112,13 @@ def candle_quality(candle: list, threshold) -> bool:
     low_price = Decimal(candle[3])
     close_price = Decimal(candle[4])
 
-    change_is_negative = open_price > close_price
-    if change_is_negative:
+    if open_price > close_price:
         return False
 
-    #change = close_price / open_price
-    amplitude = high_price/low_price
+    change = close_price / open_price
+    # amplitude = high_price / low_price
 
-    is_candle_good = amplitude >= threshold
+    is_candle_good = change >= threshold
 
     if is_candle_good:
         return True
@@ -107,23 +154,30 @@ def is_bettable_symbol(candles: list) -> bool:
             True: is a good candidate to bet
             False: is not good enough to bet
     """
-    whole_candles = join_candles(candles)
-    is_whole_candles_good = candle_quality(
-        whole_candles, 1.03
-    )  # see global candel state
-    if not is_whole_candles_good:
-        return False
+    try:
+        whole_candles = join_candles(candles)
+        is_whole_candles_good = candle_quality(
+            whole_candles, 1.08
+        )  # see global candel state
+        if not is_whole_candles_good:
+            return False
 
-    last_candles = join_candles(candles[len(candles) - 2 :])
-    is_last_candles_good = candle_quality(last_candles, 1.0175)  # see global candel state
-    if not is_last_candles_good:
-        return False
-    
-    is_last_candle_good = candle_quality(candles[len(candles) - 1], 1) 
+        last_candles = join_candles(candles[len(candles) - 2 :])
+        is_last_candles_good = candle_quality(
+            last_candles, 1.05
+        )  # see global candel state
+        if not is_last_candles_good:
+            return False
 
-    if is_last_candle_good:
-        return True
-    else:
+        is_last_candle_good = candle_quality(candles[len(candles) - 1], 1)
+
+        if is_last_candle_good:
+            return True
+        else:
+            return False
+    except:
+        print("An exception occurred in is_bettable_symbol")
+        print(candles)
         return False
 
 
@@ -157,3 +211,4 @@ def join_candles(candles: list) -> list:
     ]
 
     return joined_candles
+
