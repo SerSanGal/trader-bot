@@ -137,3 +137,4 @@ binance_config.py
 
 # data
 bot/data/*
+bot/history.csv
