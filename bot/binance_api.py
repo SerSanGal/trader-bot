@@ -177,7 +177,6 @@ class BinanceAPI:
 
     def _order(self, market, quantity, side, rate=None):
         params = {}
-
         if rate is not None:
             params["type"] = "LIMIT"
             params["price"] = self._format(rate)
