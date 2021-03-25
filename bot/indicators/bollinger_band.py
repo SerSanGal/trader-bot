@@ -2,49 +2,47 @@ from decimal import Decimal
 import statistics
 
 
-def calculate(candles: list) -> list:
+def calculate(values: list, periode=20) -> list:
     count = 0
-    start_bollinger_band = 20
-    last_20_candles = []
-    plus_candles = []
-    for candle in candles:
-        candle.pop(len(candle) - 1)  # remove unusual value
-        if count < start_bollinger_band:
+    periode_values = []
+    middle_bollinger_band = []
+    upper_bollinger_band = []
+    lower_bollinger_band = []
+    for value in values:
+        if count < periode:
             count = count + 1
-            last_20_candles.append(candle)
-            plus_candles.append(candle)
+            periode_values.append(value)
             continue
 
-        standard_deviation = calculate_standard_deviation(last_20_candles)
-        middle_bollinger_band = calculate_simple_moving_average(last_20_candles)
+        standard_deviation = calculate_standard_deviation(periode_values)
+        middle_bollinger_value = calculate_simple_moving_average(periode_values)
 
-        last_20_candles.pop(0)
-        last_20_candles.append(candle)
+        periode_values.pop(0)
+        periode_values.append(value)
 
-        upper_bollinger_band = middle_bollinger_band + (standard_deviation * 2)
-        lower_bollinger_band = middle_bollinger_band - (standard_deviation * 2)
+        upper_bollinger_value = middle_bollinger_value + (standard_deviation * 2)
+        lower_bollinger_value = middle_bollinger_value - (standard_deviation * 2)
 
-        candle.append(middle_bollinger_band)
-        candle.append(upper_bollinger_band)
-        candle.append(lower_bollinger_band)
-        plus_candles.append(candle)
+        middle_bollinger_band.append(middle_bollinger_value)
+        upper_bollinger_band.append(upper_bollinger_value)
+        lower_bollinger_band.append(lower_bollinger_value)
 
-    rows = []
-    for candle in plus_candles:
-        rows.append(candle)
+    return {
+        "MBB": middle_bollinger_band,
+        "UBB": upper_bollinger_band,
+        "LBB": lower_bollinger_band,
+    }
 
-    return rows[len(rows) - 1]
 
-
-def calculate_standard_deviation(last_20_candles):
+def calculate_standard_deviation(periode_values):
     data = []
-    for candle in last_20_candles:
-        data.append(Decimal(candle[4]))
+    for value in periode_values:
+        data.append(Decimal(value))
     return statistics.stdev(data)
 
 
-def calculate_simple_moving_average(last_20_candles):
+def calculate_simple_moving_average(periode_values):
     acc = 0
-    for candle in last_20_candles:
-        acc += Decimal(candle[4])  # close
-    return acc / len(last_20_candles)
+    for value in periode_values:
+        acc += Decimal(value)
+    return acc / len(periode_values)
