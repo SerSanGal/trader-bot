@@ -1,7 +1,6 @@
 from multiprocessing import Process
 
-import binance_api
-import binance_config
+from binance import binance_api, binance_config
 import filters
 import bot_config
 from trader import start_trading
