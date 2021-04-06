@@ -127,7 +127,7 @@ def there_is_hype(candles: list) -> bool:
         close_price = Decimal(candle[4])
         if close_price > open_price:
             change = (close_price/open_price - 1 ) * 100
-            if change > 3:
+            if change > 1.5:
                 return True
     return False
 
