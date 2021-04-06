@@ -11,8 +11,15 @@ from datetime import datetime
 
 if __name__ == "__main__":
     b_client = binance_api.BinanceAPI(binance_config.api_key, binance_config.api_secret)
-
-    exchange_info = b_client.get_exchange_info()
+    try:
+        exchange_info = b_client.get_exchange_info()
+        if "msg" in exchange_info:
+            print("bot_launch", "EXCHANGE INFO ERROR", exchange_info["msg"])
+            exit()
+    except:
+        print("bot_launch", "API ERROR")
+        exit()
+    
     symbols = [symbol for symbol in exchange_info["symbols"]]
     filtered_symbols = filters.filter_symbols_by_buy_coin(symbols, bot_config.coin)
 
@@ -29,7 +36,17 @@ if __name__ == "__main__":
     # print(list_of_process)
 
     while True:
-        account = b_client.get_account()
+        try:
+            account = b_client.get_account()
+            if "msg" in account:
+                print("bot_launch", "ACCOUNT ERROR", account["msg"])
+                time.sleep(60)
+                continue
+        except:
+            print("bot_launch", "API ERROR")
+            time.sleep(60)
+            continue
+        
         total = 0
         for coin in account["balances"]:
             if coin["asset"] != bot_config.coin and (
