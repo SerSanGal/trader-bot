@@ -75,7 +75,7 @@ def storch_rsi_dump_signal(closes: list) -> bool:
 
 def is_stable_coin(closes: list) -> bool:
     stability = abs(((abs(numpy.std(closes)) + closes[-1]) / closes[-1]) - 1)
-    return stability < 0.005
+    return stability < 0.0007
 
 
 def ma(closes: list) -> list:
@@ -121,32 +121,13 @@ def get_closes_from_candles(candles: list) -> list:
     return numpy.array(closes)
 
 
-#  ----- OLD ------
-def is_bull_trend(candles: list, periode=60) -> bool:
-    closes = [candle[4] for candle in candles]
-    last_close = closes[-1]
-    MA = sum(closes[-periode]) / periode
-    return last_close > MA
-
-
-def is_a_dip(candles: list) -> bool:
-    closes = [candle[4] for candle in candles]
-    last_close = closes[-1]
-    up, mid, low = BBANDS(closes, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
-    last_lower_bollinger_value = low[-1]
-    if Decimal(last_close) < Decimal(last_lower_bollinger_value):
-        return True
-    else:
-        return False
-
-
-def is_a_buy_zone(candles: list) -> bool:
-    closes = [candle[4] for candle in candles]
-    last_close = closes[-1]
-    up, mid, low = BBANDS(closes, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
-    last_lower_bollinger_value = low[-1]
-    if Decimal(last_close) > Decimal(last_lower_bollinger_value):
-        return True
-    else:
-        return False
+def there_is_hype(candles: list) -> bool:
+    for candle in candles:
+        open_price = Decimal(candle[1])
+        close_price = Decimal(candle[4])
+        if close_price > open_price:
+            change = (close_price/open_price - 1 ) * 100
+            if change > 3:
+                return True
+    return False
 

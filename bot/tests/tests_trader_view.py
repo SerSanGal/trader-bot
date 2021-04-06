@@ -13,6 +13,7 @@ from trader_view import (
     get_closes_from_candles,
     is_stable_coin,
     is_moving_up,
+    there_is_hype,
 )
 import numpy
 import csv
@@ -146,39 +147,81 @@ def test_is_moving_up(values, expected_output):
     assert actual_output == expected_output
 
 
+candles_1 = [
+    [
+        1499040000000,  # Open time
+        "0.01634790",  # Open
+        "0.80000000",  # High
+        "0.01575800",  # Low
+        "0.01577100",  # Close
+        "148976.11427815",  # Volume
+        1499644799999,  # Close time
+        "2434.19055334",  # Quote asset volume
+        308,  # Number of trades
+        "1756.87402397",  # Taker buy base asset volume
+        "28.46694368",  # Taker buy quote asset volume
+        "17928899.62484339",  # Ignore.
+    ],
+    [
+        1499040000000,  # Open time
+        "0.01634790",  # Open
+        "0.80000000",  # High
+        "0.01575800",  # Low
+        "0.01677100",  # Close
+        "148976.11427815",  # Volume
+        1499644799999,  # Close time
+        "2434.19055334",  # Quote asset volume
+        308,  # Number of trades
+        "1756.87402397",  # Taker buy base asset volume
+        "28.46694368",  # Taker buy quote asset volume
+        "17928899.62484339",  # Ignore.
+    ],
+]
+
+
 def test_get_closes_from_candles():
-    candles = [
-        [
-            1499040000000,  # Open time
-            "0.01634790",  # Open
-            "0.80000000",  # High
-            "0.01575800",  # Low
-            "0.01577100",  # Close
-            "148976.11427815",  # Volume
-            1499644799999,  # Close time
-            "2434.19055334",  # Quote asset volume
-            308,  # Number of trades
-            "1756.87402397",  # Taker buy base asset volume
-            "28.46694368",  # Taker buy quote asset volume
-            "17928899.62484339",  # Ignore.
-        ],
-        [
-            1499040000000,  # Open time
-            "0.01634790",  # Open
-            "0.80000000",  # High
-            "0.01575800",  # Low
-            "0.01677100",  # Close
-            "148976.11427815",  # Volume
-            1499644799999,  # Close time
-            "2434.19055334",  # Quote asset volume
-            308,  # Number of trades
-            "1756.87402397",  # Taker buy base asset volume
-            "28.46694368",  # Taker buy quote asset volume
-            "17928899.62484339",  # Ignore.
-        ],
-    ]
     expected_output = numpy.array(
         [numpy.double("0.01577100"), numpy.double("0.01677100")]
     )
-    actual_output = get_closes_from_candles(candles)
+    actual_output = get_closes_from_candles(candles_1)
     assert numpy.all(actual_output == expected_output)
+
+
+candles_2 = [
+    [
+        1499040000000,  # Open time
+        "0.01634790",  # Open
+        "0.80000000",  # High
+        "0.01575800",  # Low
+        "0.01685469",  # Close
+        "148976.11427815",  # Volume
+        1499644799999,  # Close time
+        "2434.19055334",  # Quote asset volume
+        308,  # Number of trades
+        "1756.87402397",  # Taker buy base asset volume
+        "28.46694368",  # Taker buy quote asset volume
+        "17928899.62484339",  # Ignore.
+    ],
+    [
+        1499040000000,  # Open time
+        "0.01634790",  # Open
+        "0.80000000",  # High
+        "0.01575800",  # Low
+        "0.01677100",  # Close
+        "148976.11427815",  # Volume
+        1499644799999,  # Close time
+        "2434.19055334",  # Quote asset volume
+        308,  # Number of trades
+        "1756.87402397",  # Taker buy base asset volume
+        "28.46694368",  # Taker buy quote asset volume
+        "17928899.62484339",  # Ignore.
+    ],
+]
+
+
+@pytest.mark.parametrize(
+    "values, expected_output", [(candles_1, False,), (candles_2, True,)],
+)
+def test_there_is_hype(values, expected_output):
+    actual_output = there_is_hype(values)
+    assert actual_output == expected_output
