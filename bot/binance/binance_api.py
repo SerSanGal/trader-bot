@@ -2,7 +2,7 @@ import time
 import hashlib
 import requests
 import hmac
-import binance_config
+from binance import binance_config
 
 try:
     from urllib import urlencode
