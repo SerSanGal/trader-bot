@@ -22,9 +22,18 @@ try:
     symbol = sys.argv[1]
 except IndexError:
     sys.exit("ERROR: Symbol argument missing")
+    
+
+try:
+    """
+    valid intervals: 1m 3m 5m 15m 30m 1h 2h 4h 6h 8h 12h 1d 3d 1w 1M
+    """
+    interval = sys.argv[2]
+except IndexError:
+    sys.exit("ERROR: Interval argument missing")
 
 
-candles = b_client.get_klines_by_limit(symbol, "1m", 120)
+candles = b_client.get_klines_by_limit(symbol, interval, 120)
 
 if "msg" in candles:
     sys.exit("ERROR: " + candles["msg"] )
