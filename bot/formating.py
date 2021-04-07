@@ -1,6 +1,6 @@
 from decimal import Decimal
 import math
-
+import numpy
 
 def price_format(price: Decimal, tick_size: str) -> str:
     prec = tick_size.find("1") - 1
@@ -63,3 +63,27 @@ def quantity_format(quantity: Decimal, step_size: int) -> Decimal:
         multiplier = Decimal(math.pow(10, step_size))
         quantity = Decimal(int(quantity * multiplier) / multiplier)
         return Decimal("{:.{prec}f}".format(quantity, prec=step_size))
+
+
+def sanitize_candle_for_pattern_recognition(candles: list) -> dict:
+    input_data = {
+        "close_time": [],
+        "open": [],
+        "high": [],
+        "low": [],
+        "close": [],
+    }
+    for candle in candles:
+        input_data["close_time"].append(numpy.double(candle[6]))
+        input_data["close"].append(numpy.double(candle[4]))
+        input_data["high"].append(numpy.double(candle[2]))
+        input_data["low"].append(numpy.double(candle[3]))
+        input_data["open"].append(numpy.double(candle[1]))
+        
+    data = {}
+    data["close_time"] = numpy.array(input_data["close_time"])
+    data["close"] = numpy.array(input_data["close"])
+    data["high"] = numpy.array(input_data["high"])
+    data["low"] = numpy.array(input_data["low"])
+    data["open"] = numpy.array(input_data["open"])
+    return data
