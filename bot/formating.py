@@ -2,6 +2,7 @@ from decimal import Decimal
 import math
 import numpy
 
+
 def price_format(price: Decimal, tick_size: str) -> str:
     prec = tick_size.find("1") - 1
     if prec < 0:
@@ -79,7 +80,7 @@ def sanitize_candle_for_pattern_recognition(candles: list) -> dict:
         input_data["high"].append(numpy.double(candle[2]))
         input_data["low"].append(numpy.double(candle[3]))
         input_data["open"].append(numpy.double(candle[1]))
-        
+
     data = {}
     data["close_time"] = numpy.array(input_data["close_time"])
     data["close"] = numpy.array(input_data["close"])

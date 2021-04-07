@@ -8,7 +8,7 @@ from formating import (
     symbol_tick_size,
     symbol_quantity_step_size,
     quantity_format,
-    sanitize_candle_for_pattern_recognition
+    sanitize_candle_for_pattern_recognition,
 )
 
 # TODO: (Decimal(11.99),"10","10"),
@@ -71,12 +71,7 @@ def test_is_correct_lot_size(filters, quantity, expected_output):
 
 
 def test_symbol_tick_size():
-    filters = [
-        {
-            "filterType": "PRICE_FILTER",
-            "tickSize": "0.00000100",
-        }
-    ]
+    filters = [{"filterType": "PRICE_FILTER", "tickSize": "0.00000100",}]
     expected_output = "0.00000100"
     actual_output = symbol_tick_size(filters)
     assert actual_output == expected_output
@@ -85,39 +80,15 @@ def test_symbol_tick_size():
 @pytest.mark.parametrize(
     "filters, expected_output",
     [
-        (
-            [
-                {
-                    "filterType": "LOT_SIZE",
-                    "stepSize": "1.00000000",
-                }
-            ],
-            0,
-        ),
-        (
-            [
-                {
-                    "filterType": "LOT_SIZE",
-                    "stepSize": "0.10000000",
-                }
-            ],
-            1,
-        ),
-        (
-            [
-                {
-                    "filterType": "LOT_SIZE",
-                    "stepSize": "0.00100000",
-                }
-            ],
-            3,
-        ),
+        ([{"filterType": "LOT_SIZE", "stepSize": "1.00000000",}], 0,),
+        ([{"filterType": "LOT_SIZE", "stepSize": "0.10000000",}], 1,),
+        ([{"filterType": "LOT_SIZE", "stepSize": "0.00100000",}], 3,),
     ],
 )
 def test_symbol_quantity_step_size(filters, expected_output):
     actual_output = symbol_quantity_step_size(filters)
     assert actual_output == expected_output
-    
+
 
 @pytest.mark.parametrize(
     "quantity,step_size,expected_output",
@@ -130,8 +101,8 @@ def test_symbol_quantity_step_size(filters, expected_output):
 def test_quantity_format(quantity, step_size, expected_output):
     actual_output = quantity_format(quantity, step_size)
     assert actual_output == expected_output
-    
-    
+
+
 candles_1 = [
     [
         1499040000000,  # Open time
@@ -169,18 +140,10 @@ def test_sanitize_candle_for_pattern_recognition():
         "close_time": numpy.array(
             [numpy.double(1499644799999), numpy.double(1500244799999)]
         ),
-        "open": numpy.array(
-            [numpy.double("0.01634790"), numpy.double("0.01577100")]
-        ),
-        "high": numpy.array(
-            [numpy.double("0.80000000"), numpy.double("0.90000000")]
-        ),
-        "low": numpy.array(
-            [numpy.double("0.01575800"), numpy.double("0.01475800")]
-        ),
-        "close": numpy.array(
-            [numpy.double("0.01577100"), numpy.double("0.01677100")]
-        ),
+        "open": numpy.array([numpy.double("0.01634790"), numpy.double("0.01577100")]),
+        "high": numpy.array([numpy.double("0.80000000"), numpy.double("0.90000000")]),
+        "low": numpy.array([numpy.double("0.01575800"), numpy.double("0.01475800")]),
+        "close": numpy.array([numpy.double("0.01577100"), numpy.double("0.01677100")]),
     }
     actual_output = sanitize_candle_for_pattern_recognition(candles_1)
     assert numpy.all(actual_output["close_time"] == expected_output["close_time"])
