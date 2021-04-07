@@ -29,9 +29,9 @@ candles = b_client.get_klines_by_limit(symbol, "1m", 120)
 if "msg" in candles:
     sys.exit("ERROR: " + candles["msg"] )
 
-data = [["close_time", "close"]]
+data = [["close_time", "close", "high", "low", "open"]]
 for candle in candles:
-    data.append([candle[6], numpy.double(candle[4])])
+    data.append([candle[6], numpy.double(candle[4]), numpy.double(candle[2]), numpy.double(candle[3]), numpy.double(candle[1])])
 
 with open("tests/data/"+symbol+".csv", "w", newline="") as file:
     writer = csv.writer(file)
